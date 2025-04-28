@@ -9,7 +9,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
 
-def train_random_forest(X_train, y_train, n_estimators=100, random_state=42):
+def train_random_forest(X_train, y_train, n_estimators=200, random_state=42):
     """
     Train a Random Forest classifier for loan default prediction.
 

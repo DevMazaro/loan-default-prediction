@@ -7,10 +7,12 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, StratifiedKFold
+import time
+from datetime import timedelta
 
 
-def train_xgboost_with_grid_search(X_train, y_train, param_grid=None, cv=5):
+def train_xgboost_with_grid_search(X_train, y_train, param_grid=None, n_splits=5, n_estimators=200, random_state=42,eval_metric='aucpr'):
     """
     Train an XGBoost classifier with hyperparameter tuning using GridSearchCV.
 
@@ -39,23 +41,44 @@ def train_xgboost_with_grid_search(X_train, y_train, param_grid=None, cv=5):
         param_grid = {
             'learning_rate': [0.05, 0.1, 0.2, 0.3],
             'max_depth': [3, 4, 5],
-            'min_child_weight': [15, 20, 30]
+            'min_child_weight': [15, 20, 30],
+            'scale_pos_weight': [1, 3, 5, 10]
         }
 
     # Initialize the base model
-    base_model = xgb.XGBClassifier(n_estimators=100, random_state=42)
+    base_model = xgb.XGBClassifier(
+        n_estimators=n_estimators,
+        random_state=random_state,
+        eval_metric=eval_metric
+    )
+
+    # Create a stratified k-fold object
+    stratified_cv = StratifiedKFold(n_splits = n_splits, shuffle=True, random_state=42)
 
     # Set up GridSearchCV
     grid_search = GridSearchCV(
         estimator=base_model,
         param_grid=param_grid,
-        cv=cv,
+        cv=stratified_cv,
         verbose=1
     )
 
     # Fit the grid search to the data
     print("Starting hyperparameter tuning with GridSearchCV, this may take a while...")
+
+    # Start timing before grid search
+    start_time = time.time()
+    print(f"Grid search started at: {time.strftime('%H:%M:%S')}")
+
+
     grid_search.fit(X_train, y_train)
+
+    # End timing after grid search completes
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"Grid search completed at: {time.strftime('%H:%M:%S')}")
+    print(f"Total time elapsed: {timedelta(seconds=elapsed_time)}")
+    print(f"Time per fit: {timedelta(seconds=elapsed_time / 6912)} (average across {6912} total fits)")
 
     # Print results
     print(f"Best parameters: {grid_search.best_params_}")
@@ -123,6 +146,8 @@ if __name__ == "__main__":
 
     # Load and preprocess data
     data = load_data()
+
+
     if data is not None:
         X, y = get_feature_target_split(data)
         X_processed = preprocess_data(X)
@@ -133,12 +158,17 @@ if __name__ == "__main__":
         # Train XGBoost with GridSearchCV
         print("\n--- Training XGBoost with GridSearchCV ---")
         xgb_results = train_xgboost_with_grid_search(
-            X_train, y_train,
+            X_train,
+            y_train,
             param_grid={
-                'learning_rate': [0.05, 0.1, 0.2, 0.3],
-                'max_depth': [3, 4, 5],
-                'min_child_weight': [15, 20, 30]
-            }
+                'learning_rate': [0.03, 0.05, 0.1]
+                , 'max_depth': [2, 3]
+                , 'min_child_weight': [10, 20]
+                , 'scale_pos_weight': [0.5, 1, 2, 3]
+            },
+            eval_metric = 'aucpr',
+            n_splits=3,
+            n_estimators=200,
         )
 
         # Evaluate model

@@ -76,8 +76,8 @@ def scale_skewed_features(X):
     # Scale skewed features based on prior analysis
     X_scaled['income'] = np.log1p(X_scaled['income'])
     # Additional scaling can be uncommented if needed
-    # X_scaled['creddebt'] = np.log1p(X_scaled['creddebt'])
-    # X_scaled['othdebt'] = np.log1p(X_scaled['othdebt'])
+    X_scaled['creddebt'] = np.log1p(X_scaled['creddebt'])
+    X_scaled['othdebt'] = np.log1p(X_scaled['othdebt'])
 
     return X_scaled
 

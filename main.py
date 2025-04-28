@@ -71,7 +71,10 @@ def run_preprocessing(X, y):
     print("="*50)
 
     # Preprocess data (encode categorical variables, scale features)
-    X_processed = preprocess_data(X)
+    #X_processed = preprocess_data(X,scale_features=False, encode_categorical=False) #No scaling or encoding
+    #X_processed = preprocess_data(X, scale_features=False, encode_categorical=True)  # No scaling
+    #X_processed = preprocess_data(X, scale_features=True, encode_categorical=False)  # No encoding
+    X_processed = preprocess_data(X, scale_features=True, encode_categorical=True)  # Scaling and encoding
     print(f"Preprocessed data shape: {X_processed.shape}")
     print("First 5 rows of preprocessed data:")
     print(X_processed.head())
@@ -112,14 +115,18 @@ def run_xgboost(X_train, X_test, y_train, y_test):
     print("="*50)
 
     # Train XGBoost with GridSearchCV
-    print("\n--- Training XGBoost with GridSearchCV ---")
     xgb_results = train_xgboost_with_grid_search(
-        X_train, y_train,
+        X_train,
+        y_train,
         param_grid={
-            'learning_rate': [0.05, 0.1, 0.2, 0.3],
-            'max_depth': [3, 4, 5],
-            'min_child_weight': [15, 20, 30]
-        }
+            'learning_rate': [0.03, 0.05, 0.1]
+            , 'max_depth': [2, 3]
+            , 'min_child_weight': [10, 20]
+            , 'scale_pos_weight': [0.5, 1, 2, 3]
+        },
+        eval_metric='aucpr',
+        n_splits=3,
+        n_estimators=200,
     )
 
     # Evaluate GridSearchCV tuned model
