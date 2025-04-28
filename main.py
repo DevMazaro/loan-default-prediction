@@ -28,9 +28,9 @@ from src.visualizations.visualize import plot_correlation_heatmap, plot_pairplot
 
 def run_data_exploration(data):
     """Run data exploration steps on the dataset."""
-    print("\n" + "=" * 50)
+    print("\n" + "="*50)
     print("STEP 1: DATA EXPLORATION")
-    print("=" * 50)
+    print("="*50)
 
     # Display basic information
     display_data_info(data)
@@ -66,9 +66,9 @@ def run_data_exploration(data):
 
 def run_preprocessing(X, y):
     """Preprocess the data and split into train/test sets."""
-    print("\n" + "=" * 50)
+    print("\n" + "="*50)
     print("STEP 2: DATA PREPROCESSING")
-    print("=" * 50)
+    print("="*50)
 
     # Preprocess data (encode categorical variables, scale features)
     X_processed = preprocess_data(X)
@@ -84,9 +84,9 @@ def run_preprocessing(X, y):
 
 def run_random_forest(X_train, X_test, y_train, y_test):
     """Train and evaluate a Random Forest model."""
-    print("\n" + "=" * 50)
+    print("\n" + "="*50)
     print("STEP 3: RANDOM FOREST MODEL")
-    print("=" * 50)
+    print("="*50)
 
     # Train Random Forest
     rf_model = train_random_forest(X_train, y_train, n_estimators=200)
@@ -107,9 +107,9 @@ def run_random_forest(X_train, X_test, y_train, y_test):
 
 def run_xgboost(X_train, X_test, y_train, y_test):
     """Train, tune, and evaluate XGBoost model using GridSearchCV."""
-    print("\n" + "=" * 50)
+    print("\n" + "="*50)
     print("STEP 4: XGBOOST MODEL")
-    print("=" * 50)
+    print("="*50)
 
     # Train XGBoost with GridSearchCV
     print("\n--- Training XGBoost with GridSearchCV ---")
@@ -140,9 +140,9 @@ def run_xgboost(X_train, X_test, y_train, y_test):
 
 def compare_models(rf_results, xgb_results):
     """Compare the performance of Random Forest and XGBoost models."""
-    print("\n" + "=" * 50)
+    print("\n" + "="*50)
     print("STEP 5: MODEL COMPARISON")
-    print("=" * 50)
+    print("="*50)
 
     # Create comparison dataframe
     comparison_data = [
@@ -171,7 +171,7 @@ def compare_models(rf_results, xgb_results):
 
     # Plot accuracy
     ax1 = plt.subplot(1, 2, 1)
-    bars = sns.barplot(x='Default', y='Count', hue='Default', data=class_counts, palette='viridis', ax=ax, legend=False)
+    sns.barplot(x='Model', y='Accuracy', hue='Model', data=comparison_df, palette='viridis', ax=ax1, legend=False)
     ax1.set_title('Model Accuracy Comparison')
     ax1.set_ylim(0.7, 1.0)  # Adjust as needed
     plt.xticks(rotation=45, ha='right')
@@ -208,7 +208,7 @@ def compare_models(rf_results, xgb_results):
 def main():
     """Run the complete loan default prediction pipeline."""
     print("LOAN DEFAULT PREDICTION PIPELINE")
-    print("=" * 50)
+    print("="*50)
 
     # Step 1: Load data
     data = load_data()
@@ -231,9 +231,9 @@ def main():
     # Step 6: Compare models
     comparison = compare_models(rf_results, xgb_results)
 
-    print("\n" + "=" * 50)
+    print("\n" + "="*50)
     print("PIPELINE COMPLETE")
-    print("=" * 50)
+    print("="*50)
     print("\nResults are saved in the 'visualizations' and 'results' directories.")
     print(f"\nBest XGBoost parameters: {xgb_best_params}")
 
